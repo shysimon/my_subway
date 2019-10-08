@@ -8,14 +8,15 @@ public class Line {
     private String name;
     private ArrayList<Station> stations;
 
-    public Line() {
+    private Line() {
         this.name = "";
-        this.stations = new ArrayList<Station>();
+        this.stations = new ArrayList<>();
     }
 
     public Line(String aline) {
         this();
-        String[] s = aline.split(" +");
+        String regex = " +";
+        String[] s = aline.split(regex);
         this.name = s[0];
         for (int i = 1; i < s.length; i++) {
             this.stations.add(new Station(s[i]));
