@@ -2,7 +2,6 @@ package manager;
 
 import javafx.util.Pair;
 import model.Line;
-import model.Station;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -60,21 +59,18 @@ public class FindWay {
 
     public void outWay(String start, String end, OutputStreamWriter output) throws Exception {
         Integer st = mpStation.get(start), en = mpStation.get(end);
-        String r = "";
+        StringBuilder r = new StringBuilder();
         int minLength = 0x3f3f3f3f, minChange = 0x3f3f3f3f;
         if (st == null || en == null)
             throw new Exception("站点不存在");
         for (Pair<Integer, Integer> it : stations.get(st).getValue()) {
             int[] vis = new int[stations.size()];
             NowAt[] path = new NowAt[stations.size()];
-            Queue<NowAt> que = new PriorityQueue<>(new Comparator<NowAt>() {
-                @Override
-                public int compare(NowAt o1, NowAt o2) {
-                    if (o1.length == o2.length) {
-                        return o1.changeLine - o2.changeLine;
-                    }
-                    return o1.length - o2.length;
+            Queue<NowAt> que = new PriorityQueue<>((o1, o2) -> {
+                if (o1.length == o2.length) {
+                    return o1.changeLine - o2.changeLine;
                 }
+                return o1.length - o2.length;
             });
             que.add(new NowAt(-1, st, it.getKey(), 0, 0));
             while (que.size() != 0) {
@@ -88,18 +84,18 @@ public class FindWay {
                     if (minLength > tmp.length || minLength == tmp.length && minChange > tmp.changeLine) {
                         minLength = Math.min(minLength, tmp.length);
                         minChange = Math.min(minChange, tmp.changeLine);
-                        r = "";
+                        r = new StringBuilder();
                         int now = en, line = path[now].atLine;
                         while (now != -1) {
-                            r = " " + stations.get(now).getKey() + r;
+                            r.insert(0, " " + stations.get(now).getKey());
                             now = path[now].from;
                             if (now == -1 || path[now].atLine != line) {
                                 int oldLine = line;
                                 if (now != -1) {
-                                    r = " " + stations.get(now).getKey() + r;
+                                    r.insert(0, " " + stations.get(now).getKey());
                                     line = path[now].atLine;
                                 }
-                                r = "\n<" + lines.get(oldLine).getName() + ">" + r;
+                                r.insert(0, "\n<" + lines.get(oldLine).getName() + ">");
                             }
                         }
                     }
@@ -113,32 +109,21 @@ public class FindWay {
         }
         output.write("共经过" + (minChange + 1) + "条线路，" + (minLength + 1) + "个站点" + r);
     }
-
-//    public <T extends Comparable> T min(T a, T b) {
-//        if (a.compareTo(b) > 0) return b;
-//        else return a;
-//    }
 }
 
 class Edge {
-    public int to, atLine;
+    int to, atLine;
 
-    public Edge() {
-    }
-
-    public Edge(int to, int atLine) {
+    Edge(int to, int atLine) {
         this.to = to;
         this.atLine = atLine;
     }
 }
 
 class NowAt {
-    public int from, atStation, atLine, length, changeLine;
+    int from, atStation, atLine, length, changeLine;
 
-    public NowAt() {
-    }
-
-    public NowAt(int from, int atStation, int atLine, int length, int changeLine) {
+    NowAt(int from, int atStation, int atLine, int length, int changeLine) {
         this.from = from;
         this.atStation = atStation;
         this.atLine = atLine;
