@@ -3,7 +3,7 @@ package model;
 public class Station {
     private String name;
 
-    Station(String name) {
+    public Station(String name) {
         this.name = name;
     }
 
