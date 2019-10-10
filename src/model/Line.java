@@ -8,7 +8,7 @@ public class Line {
     private String name;
     private ArrayList<Station> stations;
 
-    private Line() {
+    public Line() {
         this.name = "";
         this.stations = new ArrayList<>();
     }
