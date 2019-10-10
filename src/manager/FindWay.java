@@ -114,6 +114,9 @@ public class FindWay {
 class Edge {
     int to, atLine;
 
+    Edge() {
+    }
+
     Edge(int to, int atLine) {
         this.to = to;
         this.atLine = atLine;
@@ -122,6 +125,9 @@ class Edge {
 
 class NowAt {
     int from, atStation, atLine, length, changeLine;
+
+    NowAt() {
+    }
 
     NowAt(int from, int atStation, int atLine, int length, int changeLine) {
         this.from = from;
