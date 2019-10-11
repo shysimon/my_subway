@@ -1,7 +1,6 @@
 package manager;
 
 import javafx.util.Pair;
-import model.Line;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -12,7 +11,6 @@ import java.util.ArrayList;
 public class ArgsReader {
     public static Pair<Integer, ArrayList<Object>> argsReader(String[] args) {
         ArrayList<Object> variables = new ArrayList<>();
-        ArrayList<Line> lines = new ArrayList<>();
         OutputStreamWriter output = new OutputStreamWriter(System.out);
         FindWay map = new FindWay();
         int type = 0, hasMap = 0;
@@ -41,8 +39,7 @@ public class ArgsReader {
                         filepath = args[i];
                         if (filepath.charAt(0) == '-')
                             throw new Exception("缺少-map后的一个参数");
-                        lines = TxtLineReader.read(filepath);
-                        map = new FindWay(lines);
+                        map = new FindWay(filepath);
                         hasMap = 1;
                     } else if (tmp.compareTo("-o") == 0) {
                         String filepath;
@@ -95,7 +92,6 @@ public class ArgsReader {
             System.out.println("请使用-map参数传入地铁数据，使用-help参数查看帮助");
             return new Pair<>(-1, null);
         }
-        variables.add(lines);
         variables.add(map);
         variables.add(names);
         variables.add(output);
