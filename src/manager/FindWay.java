@@ -103,7 +103,7 @@ public class FindWay {
                                 r.insert(0, "\n<" + lines.get(oldLine).getName() + ">");
                             }
                         }
-                        output.write("从 "+start+" 到 "+end+" 共经过" + (minChange + 1) + "条线路，" + (minLength + 1) + "个站点" + r);
+                        output.write("从 " + start + " 到 " + end + " 共经过" + (minChange + 1) + "条线路，" + (minLength + 1) + "个站点" + r);
                     }
                 }
                 for (Object itt : edges.get(tmp.atStation)) {
