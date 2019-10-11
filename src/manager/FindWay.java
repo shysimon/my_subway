@@ -1,8 +1,11 @@
 package manager;
 
 import javafx.util.Pair;
+import model.Edge;
 import model.Line;
+import model.NowAt;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.*;
@@ -22,9 +25,9 @@ public class FindWay {
         edges = new ArrayList<>();
     }
 
-    public FindWay(ArrayList<Line> lines) {
+    public FindWay(String filepath) throws FileNotFoundException {
         this();
-        this.lines = lines;
+        lines = TxtLineReader.read(filepath);
         for (int i = 0; i < lines.size(); i++) {
             mpLine.put(lines.get(i).getName(), i);
             for (int j = 0; j < lines.get(i).getStations().size(); j++) {
@@ -58,6 +61,7 @@ public class FindWay {
     }
 
     public void outWay(String start, String end, OutputStreamWriter output) throws Exception {
+        int success_flag = 0;
         Integer st = mpStation.get(start), en = mpStation.get(end);
         StringBuilder r = new StringBuilder();
         int minLength = 0x3f3f3f3f, minChange = 0x3f3f3f3f;
@@ -81,6 +85,7 @@ public class FindWay {
                 path[tmp.atStation] = tmp;
                 vis[tmp.atStation] = 1;
                 if (tmp.atStation == en) {
+                    success_flag = 1;
                     if (minLength > tmp.length || minLength == tmp.length && minChange > tmp.changeLine) {
                         minLength = Math.min(minLength, tmp.length);
                         minChange = Math.min(minChange, tmp.changeLine);
@@ -98,42 +103,23 @@ public class FindWay {
                                 r.insert(0, "\n<" + lines.get(oldLine).getName() + ">");
                             }
                         }
+                        output.write("从 "+start+" 到 "+end+" 共经过" + (minChange + 1) + "条线路，" + (minLength + 1) + "个站点" + r);
                     }
                 }
                 for (Object itt : edges.get(tmp.atStation)) {
-                    if (vis[((Edge) itt).to] == 0) {
-                        que.add(new NowAt(tmp.atStation, ((Edge) itt).to, ((Edge) itt).atLine, tmp.length + 1, tmp.changeLine + (((Edge) itt).atLine == tmp.atLine ? 0 : 1)));
+                    if (vis[((Edge) itt).getTo()] == 0) {
+                        que.add(new NowAt(tmp.atStation, ((Edge) itt).getTo(), ((Edge) itt).getAtLine(), tmp.length + 1, tmp.changeLine + (((Edge) itt).getAtLine() == tmp.atLine ? 0 : 1)));
                     }
                 }
             }
         }
-        output.write("共经过" + (minChange + 1) + "条线路，" + (minLength + 1) + "个站点" + r);
-    }
-}
-
-class Edge {
-    int to, atLine;
-
-    Edge() {
+        if (success_flag == 0) {
+            System.out.println(start + " 与 " + end + " 无法通过地铁到达");
+            return;
+        }
     }
 
-    Edge(int to, int atLine) {
-        this.to = to;
-        this.atLine = atLine;
-    }
-}
-
-class NowAt {
-    int from, atStation, atLine, length, changeLine;
-
-    NowAt() {
-    }
-
-    NowAt(int from, int atStation, int atLine, int length, int changeLine) {
-        this.from = from;
-        this.atStation = atStation;
-        this.atLine = atLine;
-        this.length = length;
-        this.changeLine = changeLine;
+    public ArrayList<Line> getLines() {
+        return lines;
     }
 }
